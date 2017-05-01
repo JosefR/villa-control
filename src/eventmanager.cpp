@@ -17,7 +17,7 @@ void EventManager::addConnection(std::shared_ptr<Connection> conn)
     std::lock_guard<std::mutex> lock(mMtx);
 
     struct epoll_event ev;
-    ev.events = EPOLLIN;
+    ev.events = EPOLLIN|EPOLLET;
     ev.data.fd = conn->getFd();
     if (epoll_ctl(mEpollfd, EPOLL_CTL_ADD, conn->getFd(), &ev) == -1) {
         throw(std::runtime_error(

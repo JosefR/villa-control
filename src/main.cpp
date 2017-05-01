@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     };
 
     auto con1(std::make_unique<villa::TtyConnection>("/dev/ttyUSB0", 
-        villa::SerialPort::BaudRate::Baud9600));
+        villa::SerialPort::BaudRate::Baud38400));
 
     auto dev1(std::make_unique<villa::DeviceWde1>(device_config));
     con1->addDevice(std::move(dev1));

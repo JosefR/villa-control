@@ -17,23 +17,23 @@ void TtyConnection::timeout()
 void TtyConnection::read()
 {
     std::vector<uint8_t> buf(128);
-    int read_byte;
+    int num_read_bytes;
 
-    mSerPort.get()->read(buf, read_byte);
-    std::cerr << __func__ << ": read: ";
-    for (int i = 0; i < read_byte; i++)
-        std::cerr << std::hex << std::setfill('0') << std::setw(2) << (unsigned int)buf[i] << " ";
+    mSerPort.get()->read(buf, num_read_bytes);
+    std::cerr << "TtyConnection::read ";
+    for (int i = 0; i < num_read_bytes; i++) {
+        std::cerr << std::hex << std::setfill('0') << std::setw(2)
+                  << (unsigned int)buf[i] << " ";
+    }
     std::cerr << std::endl;
 
     for (const auto dev : mDevices) {
-        /* hand over data */
+        dev->processReadData(buf, num_read_bytes);
     }
 }
 
-
 void TtyConnection::write()
 {
-
 }
 
 int TtyConnection::getFd() const
@@ -41,4 +41,4 @@ int TtyConnection::getFd() const
     return mSerPort.get()->getFd();
 }
 
-} // namespace villa
+}  // namespace villa
