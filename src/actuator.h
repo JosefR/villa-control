@@ -1,15 +1,13 @@
 #ifndef ACTUATOR_H
 #define ACTUATOR_H
 
-
 namespace villa {
 
-class Actuator
-{
-public:
+class Actuator {
+   public:
     Actuator();
 };
 
-} // namespace villa
+}  // namespace villa
 
-#endif // ACTUATOR_H
+#endif  // ACTUATOR_H

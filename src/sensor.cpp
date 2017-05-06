@@ -1,7 +1,7 @@
 #include "sensor.h"
 
 namespace villa {
-Sensor::Sensor(SensorType type, const std::string &name)
+Sensor::Sensor(SensorType type, const std::string& name)
     : mType(type), mName(name), mActive(false), mValue(0.0)
 {
 }
@@ -35,7 +35,7 @@ std::string Sensor::name() const
     return mName;
 }
 
-void Sensor::setName(const std::string &name)
+void Sensor::setName(const std::string& name)
 {
     mName = name;
 }
@@ -45,9 +45,9 @@ std::chrono::system_clock::time_point Sensor::lastUpdate() const
     return mLastUpdate;
 }
 
-void Sensor::setLastUpdate(const std::chrono::system_clock::time_point &lastUpdate)
+void Sensor::setLastUpdate(
+    const std::chrono::system_clock::time_point& lastUpdate)
 {
     mLastUpdate = lastUpdate;
 }
-
 }

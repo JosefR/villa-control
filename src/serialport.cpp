@@ -12,37 +12,36 @@
 
 namespace villa {
 
-SerialPort::SerialPort()
-    : mFd(-1), mBaud(BaudRate::BaudUndefined)
+SerialPort::SerialPort() : mFd(-1), mBaud(BaudRate::BaudUndefined)
 {
     std::cerr << "SerialPort::SerialPort" << std::endl;
-
 }
 
 SerialPort::SerialPort(const std::string path, SerialPort::BaudRate baud)
 {
     std::cerr << "SerialPort::SerialPort" << std::endl;
 
-    mFd = open(path.c_str(), O_RDWR|O_NOCTTY|O_SYNC);
+    mFd = open(path.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 
     if (mFd == -1)
         throw std::runtime_error(std::strerror(errno));
 
-    termios tty { 0 };
+    termios tty{0};
     if (tcgetattr(mFd, &tty) != 0) {
         close(mFd);
         mFd = -1;
         throw std::runtime_error("open failed");
     }
 
-    cfsetospeed (&tty, static_cast<int>(baud));
-    cfsetispeed (&tty, static_cast<int>(baud));
+    cfsetospeed(&tty, static_cast<int>(baud));
+    cfsetispeed(&tty, static_cast<int>(baud));
 
-    tty.c_cc[VMIN]  = 0;            // read doesn't block
-    tty.c_cc[VTIME] = 10;            // no read timeout
+    tty.c_cc[VMIN] = 0;    // read doesn't block
+    tty.c_cc[VTIME] = 10;  // no read timeout
 
     // set to raw mode
-    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
+    tty.c_iflag &=
+        ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
     tty.c_oflag &= ~OPOST;
     tty.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
     tty.c_cflag &= ~(CSIZE | PARENB);
@@ -78,14 +77,14 @@ SerialPort::~SerialPort()
 SerialPort::BaudRate SerialPort::BaudFromInt(int baud)
 {
     switch (baud) {
-        case 9600:
-            return BaudRate::Baud9600;
-        case 115200:
-            return BaudRate::Baud115200;
-        case 1000000:
-            return BaudRate::Baud1000000;
-        default:
-            throw(std::runtime_error("invalid baud rate"));
+    case 9600:
+        return BaudRate::Baud9600;
+    case 115200:
+        return BaudRate::Baud115200;
+    case 1000000:
+        return BaudRate::Baud1000000;
+    default:
+        throw(std::runtime_error("invalid baud rate"));
     }
 }
 
@@ -104,7 +103,7 @@ std::string SerialPort::getPath() const
     return mPath;
 }
 
-Connection::IOState SerialPort::read(std::vector<uint8_t> &buf, int &read_bytes)
+Connection::IOState SerialPort::read(std::vector<uint8_t>& buf, int& read_bytes)
 {
     int cnt = buf.size();
     int ret;
@@ -126,4 +125,4 @@ Connection::IOState SerialPort::read(std::vector<uint8_t> &buf, int &read_bytes)
     }
 }
 
-} // namespace villa
+}  // namespace villa

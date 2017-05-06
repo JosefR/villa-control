@@ -4,7 +4,6 @@ namespace villa {
 
 Connection::Connection()
 {
-
 }
 
 void Connection::addDevice(std::shared_ptr<Device> dev)
@@ -13,4 +12,4 @@ void Connection::addDevice(std::shared_ptr<Device> dev)
     mDevices.push_back(std::move(dev));
 }
 
-} // namespace villa
+}  // namespace villa

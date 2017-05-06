@@ -17,7 +17,7 @@ void EventManager::addConnection(std::shared_ptr<Connection> conn)
     std::lock_guard<std::mutex> lock(mMtx);
 
     struct epoll_event ev;
-    ev.events = EPOLLIN|EPOLLET;
+    ev.events = EPOLLIN | EPOLLET;
     ev.data.fd = conn->getFd();
     if (epoll_ctl(mEpollfd, EPOLL_CTL_ADD, conn->getFd(), &ev) == -1) {
         throw(std::runtime_error(
@@ -35,14 +35,15 @@ void EventManager::run()
     while (1) {
         int nfds = epoll_wait(mEpollfd, events, max_epoll_events, -1);
         if (nfds == -1) {
-            throw(std::runtime_error(std::string("epoll_wait failed: ").append(strerror(errno))));
+            throw(std::runtime_error(
+                std::string("epoll_wait failed: ").append(strerror(errno))));
         }
 
         for (int n = 0; n < nfds; ++n) {
             auto conn = mConnections.find(events[n].data.fd);
             if (conn != mConnections.end()) {
                 if (events[n].events & EPOLLIN) {
-                        conn->second->read();
+                    conn->second->read();
                 }
             }
         }

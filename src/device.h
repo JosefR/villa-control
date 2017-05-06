@@ -14,10 +14,9 @@
 
 namespace villa {
 
-class Device
-{
-public:
-    Device(std::map<std::string, std::string> &config);
+class Device {
+   public:
+    Device(std::map<std::string, std::string>& config);
     virtual ~Device();
 
     virtual void init() = 0;
@@ -27,12 +26,11 @@ public:
 
     std::string name() const;
 
-    virtual void processReadData(std::vector<uint8_t> &buf, int &size) = 0;
-    virtual void getSendData(std::vector<uint8_t> &buf, int &size) = 0;
+    virtual void processReadData(std::vector<uint8_t>& buf, int& size) = 0;
+    virtual void getSendData(std::vector<uint8_t>& buf, int& size) = 0;
 
-private:
-
-protected:
+   private:
+   protected:
     std::string mName;
 
     std::list<std::shared_ptr<Sensor>> mSensors;
@@ -43,6 +41,6 @@ protected:
     int mFd;
 };
 
-} // namespace villa
+}  // namespace villa
 
-#endif // DEVICE_H
+#endif  // DEVICE_H

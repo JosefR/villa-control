@@ -8,16 +8,11 @@
 
 namespace villa {
 
-class Connection
-{
-public:
-    enum class IOState {
-        FINISHED,
-        AGAIN,
-        ERROR
-    };
+class Connection {
+   public:
+    enum class IOState { FINISHED, AGAIN, ERROR };
 
-public:
+   public:
     Connection();
 
     virtual void timeout() = 0;
@@ -28,11 +23,10 @@ public:
 
     void addDevice(std::shared_ptr<Device> dev);
 
-protected:
+   protected:
     std::list<std::shared_ptr<Device>> mDevices;
-
 };
 
-} // namespace villa
+}  // namespace villa
 
-#endif // VILLA_CONNECTION_H
+#endif  // VILLA_CONNECTION_H

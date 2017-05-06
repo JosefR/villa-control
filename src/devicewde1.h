@@ -8,10 +8,9 @@
 
 namespace villa {
 
-class DeviceWde1 : public Device
-{
-public:
-    DeviceWde1(std::map<std::string, std::string> &config);
+class DeviceWde1 : public Device {
+   public:
+    DeviceWde1(std::map<std::string, std::string>& config);
 
     virtual ~DeviceWde1();
 
@@ -23,19 +22,16 @@ public:
 
     virtual void stop();
 
-    virtual void processReadData(std::vector<uint8_t> &buf, int &size);
+    virtual void processReadData(std::vector<uint8_t>& buf, int& size);
 
-    virtual void getSendData(std::vector<uint8_t> &buf, int &size);
+    virtual void getSendData(std::vector<uint8_t>& buf, int& size);
 
-private:
+   private:
     void handleEventRead();
 
-
-
-private:
-
+   private:
 };
 
-} // namespace villa
+}  // namespace villa
 
-#endif // DEVICEWDE1_H
+#endif  // DEVICEWDE1_H

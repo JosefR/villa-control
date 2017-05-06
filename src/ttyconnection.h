@@ -9,9 +9,8 @@
 
 namespace villa {
 
-class TtyConnection : public Connection
-{
-public:
+class TtyConnection : public Connection {
+   public:
     TtyConnection(std::string path, SerialPort::BaudRate baud);
 
     virtual void timeout();
@@ -20,10 +19,10 @@ public:
 
     virtual int getFd() const;
 
-private:
+   private:
     std::unique_ptr<SerialPort> mSerPort;
 };
 
-} // namespace villa
+}  // namespace villa
 
-#endif // VILLA_TTYCONNECTION_H
+#endif  // VILLA_TTYCONNECTION_H

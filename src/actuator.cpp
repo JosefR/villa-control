@@ -4,7 +4,6 @@ namespace villa {
 
 Actuator::Actuator()
 {
-
 }
 
-} // namespace villa
+}  // namespace villa
