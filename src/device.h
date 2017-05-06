@@ -35,8 +35,8 @@ private:
 protected:
     std::string mName;
 
-    std::list<std::unique_ptr<Sensor>> mSensors;
-    std::list<std::unique_ptr<Actuator>> mActuators;
+    std::list<std::shared_ptr<Sensor>> mSensors;
+    std::list<std::shared_ptr<Actuator>> mActuators;
 
     std::map<std::string, std::string> mConfig;
 

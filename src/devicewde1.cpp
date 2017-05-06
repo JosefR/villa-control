@@ -11,11 +11,37 @@
 
 namespace villa {
 
-DeviceWde1::DeviceWde1(std::map<std::string, std::string> &config)
+DeviceWde1::DeviceWde1(std::map<std::string, std::string>& config)
     : Device(config)
 {
     std::cerr << "DeviceWde1::DeviceWde1" << std::endl;
 
+    // add all possible sensors
+
+    std::string name("Sensor X: Temperature");
+    for (int i = 0; i < 8; i++) {
+        name.replace(7, 1, std::to_string(i));
+        mSensors.push_back(
+            std::make_shared<Sensor>(SensorType::Thermometer, name));
+    }
+
+    name = std::string("Sensor X: Humidity");
+    for (int i = 0; i < 8; i++) {
+        name.replace(7, 1, std::to_string(i));
+        mSensors.push_back(
+            std::make_shared<Sensor>(SensorType::Hygrometer, name));
+    }
+
+    mSensors.push_back(std::make_shared<Sensor>(
+        SensorType::Thermometer, "Combined Sensor: Temperature"));
+    mSensors.push_back(std::make_shared<Sensor>(SensorType::Hygrometer,
+                                                "Combined Sensor: Humidity"));
+    mSensors.push_back(std::make_shared<Sensor>(SensorType::Anemometer,
+                                                "Combined Sensor: Wind Speed"));
+    mSensors.push_back(std::make_shared<Sensor>(
+        SensorType::RainGauge, "Combined Sensor: Rain Amount"));
+    mSensors.push_back(std::make_shared<Sensor>(SensorType::RainState,
+                                                "Combined Sensor: Rain State"));
 }
 
 DeviceWde1::~DeviceWde1()
@@ -33,15 +59,13 @@ void DeviceWde1::deinit()
 
 void DeviceWde1::start()
 {
-
 }
 
 void DeviceWde1::stop()
 {
-
 }
 
-void DeviceWde1::processReadData(std::vector<uint8_t> &buf, int &size)
+void DeviceWde1::processReadData(std::vector<uint8_t>& buf, int& size)
 {
     std::cerr << "DeviceWde1::processReadData" << std::endl;
 
@@ -80,23 +104,29 @@ void DeviceWde1::processReadData(std::vector<uint8_t> &buf, int &size)
     str.erase(0, 5);
     std::replace(str.begin(), str.end(), ',', '.');
 
-    while ((k = str.find(";")) != std::string::npos) {
+    auto it = mSensors.begin();
+    int i = 0;
+    while (((k = str.find(";")) != std::string::npos) && it != mSensors.end()) {
         if (k > 0) {
             values.push_back(std::stof(str));
+            (*it)->setValue(std::stof(str));
+            (*it)->setActive(true);
         } else {
             values.push_back(0.0);
+            (*it)->setActive(false);
         }
-        str.erase(0, k+1);
+        str.erase(0, k + 1);
+        it++;
     }
 
-    for (const auto v: values)
-        std::cerr << "val: " << v << std::endl;
-
+    for (auto s : mSensors) {
+        std::cerr << "Sensor (" << (s->active() ? "active) " : "inactive) ")
+                  << s->name() << "Value: " << s->value() << std::endl;
+    }
 }
 
-void DeviceWde1::getSendData(std::vector<uint8_t> &buf, int &size)
+void DeviceWde1::getSendData(std::vector<uint8_t>& buf, int& size)
 {
-
 }
 
-} // namespace villa
+}  // namespace villa
