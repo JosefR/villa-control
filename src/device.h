@@ -15,7 +15,7 @@
 namespace villa {
 
 class Device {
-   public:
+public:
     Device(std::map<std::string, std::string>& config);
     virtual ~Device();
 
@@ -29,8 +29,8 @@ class Device {
     virtual void processReadData(std::vector<uint8_t>& buf, int& size) = 0;
     virtual void getSendData(std::vector<uint8_t>& buf, int& size) = 0;
 
-   private:
-   protected:
+private:
+protected:
     std::string mName;
 
     std::list<std::shared_ptr<Sensor>> mSensors;

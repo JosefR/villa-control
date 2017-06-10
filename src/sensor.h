@@ -18,7 +18,7 @@ enum class SensorType {
 };
 
 class Sensor {
-   public:
+public:
     Sensor(SensorType type, const std::string& name);
     virtual ~Sensor();
 
@@ -34,7 +34,7 @@ class Sensor {
     std::chrono::system_clock::time_point lastUpdate() const;
     void setLastUpdate(const std::chrono::system_clock::time_point& lastUpdate);
 
-   private:
+private:
     SensorType mType;
     std::string mName;
     bool mActive;

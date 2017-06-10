@@ -1,5 +1,6 @@
 #include <ctime>
 #include <cstring>
+#include "connection.h"
 #include "eventmanager.h"
 
 namespace villa {
@@ -12,19 +13,28 @@ EventManager::EventManager()
     }
 }
 
-void EventManager::addConnection(std::shared_ptr<Connection> conn)
+void EventManager::registerConnection(void* conn)
 {
     std::lock_guard<std::mutex> lock(mMtx);
 
-    struct epoll_event ev;
-    ev.events = EPOLLIN | EPOLLET;
-    ev.data.fd = conn->getFd();
-    if (epoll_ctl(mEpollfd, EPOLL_CTL_ADD, conn->getFd(), &ev) == -1) {
+    Connection* c = static_cast<Connection*>(conn);
+
+    epoll_event ev;
+    ev.events = EPOLLIN;
+    ev.data.ptr = conn;
+    if (epoll_ctl(mEpollfd, EPOLL_CTL_ADD, c->getFd(), &ev) == -1) {
         throw(std::runtime_error(
             std::string("epoll_ctl add: ").append(strerror(errno))));
     }
+}
 
-    mConnections[conn->getFd()] = conn;
+void EventManager::unregisterConnection(void* conn)
+{
+    if (epoll_ctl(mEpollfd, EPOLL_CTL_DEL,
+                  static_cast<Connection*>(conn)->getFd(), nullptr) == -1) {
+        throw(std::runtime_error(
+            std::string("epoll_ctl add: ").append(strerror(errno))));
+    }
 }
 
 void EventManager::run()
@@ -40,14 +50,16 @@ void EventManager::run()
         }
 
         for (int n = 0; n < nfds; ++n) {
-            auto conn = mConnections.find(events[n].data.fd);
-            if (conn != mConnections.end()) {
-                if (events[n].events & EPOLLIN) {
-                    conn->second->read();
-                }
+            if (events[n].events & EPOLLIN) {
+                static_cast<Connection*>(events[n].data.ptr)->read();
             }
         }
     }
+}
+
+std::list<std::string> EventManager::getSensors()
+{
+    std::list<std::string> sensors;
 }
 
 }  // namespace villa

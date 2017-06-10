@@ -9,7 +9,7 @@
 namespace villa {
 
 class DeviceWde1 : public Device {
-   public:
+public:
     DeviceWde1(std::map<std::string, std::string>& config);
 
     virtual ~DeviceWde1();
@@ -26,10 +26,10 @@ class DeviceWde1 : public Device {
 
     virtual void getSendData(std::vector<uint8_t>& buf, int& size);
 
-   private:
+private:
     void handleEventRead();
 
-   private:
+private:
 };
 
 }  // namespace villa

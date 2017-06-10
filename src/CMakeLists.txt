@@ -2,7 +2,10 @@ set(VILLA_CONTROL_SRC
     "main.cpp"
     "eventmanager.cpp"
     "connection.cpp"
+    "internalconnection.cpp"
     "ttyconnection.cpp"
+    "udsconnection.cpp"
+    "udsserverconnection.cpp"
     "serialport.cpp"
     "actuator.cpp"
     "sensor.cpp"
@@ -10,7 +13,11 @@ set(VILLA_CONTROL_SRC
     "devicewde1.cpp"
 )
 
+set(VILLA_CONTROL_LIBS
+    jansson
+)
+
 add_executable(${PROJECT_NAME} ${VILLA_CONTROL_SRC})
 
-target_link_libraries(${PROJECT_NAME} jansson)
+target_link_libraries(${PROJECT_NAME} ${VILLA_CONTROL_LIBS})
 

@@ -4,7 +4,7 @@
 namespace villa {
 
 class Actuator {
-   public:
+public:
     Actuator();
 };
 

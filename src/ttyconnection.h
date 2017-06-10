@@ -4,14 +4,16 @@
 #include <memory>
 #include <string>
 
+#include "eventmanager.h"
 #include "connection.h"
 #include "serialport.h"
 
 namespace villa {
 
 class TtyConnection : public Connection {
-   public:
-    TtyConnection(std::string path, SerialPort::BaudRate baud);
+public:
+    TtyConnection(EventManager* evmgr, std::string path,
+                  SerialPort::BaudRate baud);
 
     virtual void timeout();
     virtual void read();
@@ -19,7 +21,7 @@ class TtyConnection : public Connection {
 
     virtual int getFd() const;
 
-   private:
+private:
     std::unique_ptr<SerialPort> mSerPort;
 };
 

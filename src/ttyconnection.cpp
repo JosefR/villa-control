@@ -4,9 +4,11 @@
 
 namespace villa {
 
-TtyConnection::TtyConnection(std::string path, SerialPort::BaudRate baud)
-    : mSerPort(std::make_unique<SerialPort>(path, baud))
+TtyConnection::TtyConnection(EventManager *evmgr, std::string path,
+        SerialPort::BaudRate baud)
+    : mSerPort(std::make_unique<SerialPort>(path, baud)), Connection(evmgr)
 {
+    mEvMgr->registerConnection(this);
 }
 
 void TtyConnection::timeout()

@@ -2,7 +2,12 @@
 
 namespace villa {
 
-Connection::Connection()
+Connection::Connection(EventManager *evmgr)
+    : mEvMgr(evmgr)
+{
+}
+
+Connection::~Connection()
 {
 }
 
