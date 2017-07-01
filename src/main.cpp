@@ -8,6 +8,28 @@
 #include "ttyconnection.h"
 #include "devicewde1.h"
 #include "serialport.h"
+#include "program.h"
+
+class TestProgram : public villa::Program
+{
+public:
+    TestProgram(villa::EventManager *evmgr)
+        : villa::Program(evmgr)
+    {
+        evmgr->registerSensorListener("USB WDE1", "Sensor 3: Temperature", this);                                                                                 ;
+    }
+
+    virtual void eventCallback(villa::Sensor *s)
+    {
+        if (s->device()->name() == "USB WDE1") {
+            if (s->name() == "Sensor 3: Temperature") {
+                std::cout << s->device()->name() << ": Sensor 3 updated to " <<
+                    s->value() << "°C" << std::endl;
+            }
+        }
+    }
+
+};
 
 int main(int argc, char** argv)
 {

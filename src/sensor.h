@@ -3,8 +3,12 @@
 
 #include <string>
 #include <chrono>
+#include <list>
 
 namespace villa {
+
+class Program;
+class Device;
 
 enum class SensorType {
     Thermometer,  // temperature in °C
@@ -19,7 +23,8 @@ enum class SensorType {
 
 class Sensor {
 public:
-    Sensor(SensorType type, const std::string& name);
+    Sensor(Device *device, SensorType type, const std::string& name);
+    Sensor() = delete;
     virtual ~Sensor();
 
     double value() const;
@@ -34,12 +39,19 @@ public:
     std::chrono::system_clock::time_point lastUpdate() const;
     void setLastUpdate(const std::chrono::system_clock::time_point& lastUpdate);
 
+    Device *device() const;
+
 private:
+    void notifyListeners();
+
+private:
+    Device *mDevice;
     SensorType mType;
     std::string mName;
     bool mActive;
     double mValue;
     std::chrono::system_clock::time_point mLastUpdate;
+    std::list<Program*> mListeners;
 };
 
 }  // namespace villa

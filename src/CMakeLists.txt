@@ -11,6 +11,7 @@ set(VILLA_CONTROL_SRC
     "sensor.cpp"
     "device.cpp"
     "devicewde1.cpp"
+    "program.cpp"
 )
 
 set(VILLA_CONTROL_LIBS

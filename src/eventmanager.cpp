@@ -1,5 +1,7 @@
 #include <ctime>
 #include <cstring>
+#include <algorithm>
+
 #include "connection.h"
 #include "eventmanager.h"
 
@@ -13,28 +15,42 @@ EventManager::EventManager()
     }
 }
 
-void EventManager::registerConnection(void* conn)
+void EventManager::registerConnection(Connection *conn)
 {
     std::lock_guard<std::mutex> lock(mMtx);
-
-    Connection* c = static_cast<Connection*>(conn);
 
     epoll_event ev;
     ev.events = EPOLLIN;
     ev.data.ptr = conn;
-    if (epoll_ctl(mEpollfd, EPOLL_CTL_ADD, c->getFd(), &ev) == -1) {
+    if (epoll_ctl(mEpollfd, EPOLL_CTL_ADD, conn->getFd(), &ev) == -1) {
         throw(std::runtime_error(
             std::string("epoll_ctl add: ").append(strerror(errno))));
     }
 }
 
-void EventManager::unregisterConnection(void* conn)
+void EventManager::unregisterConnection(Connection *conn)
 {
-    if (epoll_ctl(mEpollfd, EPOLL_CTL_DEL,
-                  static_cast<Connection*>(conn)->getFd(), nullptr) == -1) {
+    if (epoll_ctl(mEpollfd, EPOLL_CTL_DEL, conn->getFd(), nullptr) == -1) {
         throw(std::runtime_error(
             std::string("epoll_ctl add: ").append(strerror(errno))));
     }
+}
+
+void EventManager::registerProgram(Program *prog)
+{
+    mPrograms.push_back(prog);
+}
+
+void EventManager::unregisterProgram(Program *prog)
+{
+    auto it = std::find(mPrograms.begin(), mPrograms.end(), prog);
+    mPrograms.erase(it);
+}
+
+void EventManager::registerSensorListener(std::__cxx11::string device, std::string sensor,
+    Program *prog)
+{
+    // TODO
 }
 
 void EventManager::run()
@@ -60,6 +76,8 @@ void EventManager::run()
 std::list<std::string> EventManager::getSensors()
 {
     std::list<std::string> sensors;
+
+    // TODO
 }
 
 }  // namespace villa

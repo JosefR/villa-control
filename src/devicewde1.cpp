@@ -22,25 +22,25 @@ DeviceWde1::DeviceWde1(std::map<std::string, std::string>& config)
     for (int i = 0; i < 8; i++) {
         name.replace(7, 1, std::to_string(i));
         mSensors.push_back(
-            std::make_shared<Sensor>(SensorType::Thermometer, name));
+            std::make_shared<Sensor>(this, SensorType::Thermometer, name));
     }
 
     name = std::string("Sensor X: Humidity");
     for (int i = 0; i < 8; i++) {
         name.replace(7, 1, std::to_string(i));
         mSensors.push_back(
-            std::make_shared<Sensor>(SensorType::Hygrometer, name));
+            std::make_shared<Sensor>(this, SensorType::Hygrometer, name));
     }
 
     mSensors.push_back(std::make_shared<Sensor>(
-        SensorType::Thermometer, "Combined Sensor: Temperature"));
-    mSensors.push_back(std::make_shared<Sensor>(SensorType::Hygrometer,
+        this, SensorType::Thermometer, "Combined Sensor: Temperature"));
+    mSensors.push_back(std::make_shared<Sensor>(this, SensorType::Hygrometer,
                                                 "Combined Sensor: Humidity"));
-    mSensors.push_back(std::make_shared<Sensor>(SensorType::Anemometer,
+    mSensors.push_back(std::make_shared<Sensor>(this, SensorType::Anemometer,
                                                 "Combined Sensor: Wind Speed"));
     mSensors.push_back(std::make_shared<Sensor>(
-        SensorType::RainGauge, "Combined Sensor: Rain Amount"));
-    mSensors.push_back(std::make_shared<Sensor>(SensorType::RainState,
+        this, SensorType::RainGauge, "Combined Sensor: Rain Amount"));
+    mSensors.push_back(std::make_shared<Sensor>(this, SensorType::RainState,
                                                 "Combined Sensor: Rain State"));
 }
 

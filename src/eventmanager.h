@@ -9,15 +9,24 @@
 
 #include <sys/epoll.h>
 
+#include "program.h"
+
 namespace villa {
+
+class Connection;
 
 class EventManager {
 public:
     EventManager();
 
-    void registerConnection(void *conn);
+    void registerConnection(Connection *conn);
 
-    void unregisterConnection(void *conn);
+    void unregisterConnection(Connection *conn);
+
+    void registerProgram(Program *prog);
+    void unregisterProgram(Program *prog);
+
+    void registerSensorListener(std::string device, std::string sensor, Program *prog);
 
     void run();
 
@@ -31,6 +40,7 @@ private:
 private:
     int mEpollfd;
     std::mutex mMtx;
+    std::list<Program*> mPrograms;
 };
 
 }  // namespace villa
