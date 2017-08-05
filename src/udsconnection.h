@@ -8,7 +8,7 @@ namespace villa {
 class UdsConnection : public Connection
 {
 public:
-    UdsConnection(EventManager *evmgr);
+    UdsConnection(EventManager *evmgr, const char *name);
 
     virtual ~UdsConnection();
 

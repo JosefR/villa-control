@@ -6,6 +6,7 @@ set(VILLA_CONTROL_SRC
     "ttyconnection.cpp"
     "udsconnection.cpp"
     "udsserverconnection.cpp"
+    "sctpconnection.cpp"
     "serialport.cpp"
     "actuator.cpp"
     "sensor.cpp"
@@ -19,6 +20,4 @@ set(VILLA_CONTROL_LIBS
 )
 
 add_executable(${PROJECT_NAME} ${VILLA_CONTROL_SRC})
-
 target_link_libraries(${PROJECT_NAME} ${VILLA_CONTROL_LIBS})
-
