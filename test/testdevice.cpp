@@ -1,11 +1,17 @@
 #include <iostream>
 #include <cstring>
 #include <cerrno>
+#include <ctime>
+#include <stdexcept>
+
+#include <unistd.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
+#include <sys/timerfd.h>
 #include <arpa/inet.h>
 
 using namespace std;
+
 
 int main()
 {
@@ -15,31 +21,58 @@ int main()
     }
 
     //int listenfd = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, 0);
-    int listenfd = socket(AF_INET, SOCK_SEQPACKET|SOCK_NONBLOCK, IPPROTO_SCTP);
-    if (listenfd == -1) {
+    int clientfd = socket(AF_INET, SOCK_SEQPACKET|SOCK_NONBLOCK, IPPROTO_SCTP);
+    if (clientfd == -1) {
         std::cerr << "socket() failed" << strerror(errno) << std::endl;
     }
 
     struct sockaddr_in address;
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_addr.s_addr = inet_addr("127.0.0.1");
     address.sin_port = htons(9991);
 
-    if (bind(listenfd, reinterpret_cast<sockaddr*>(&address), sizeof(address))
-            == -1) {
-        std::cerr << "bind() failed: " << strerror(errno) << std::endl;
-    }
-
-    if (listen(listenfd, 32) == -1) {
-        std::cerr << "listen() failed: " << strerror(errno) << std::endl;
+    if (connect(clientfd, reinterpret_cast<struct sockaddr*>(&address),
+            sizeof(address)) == -1) {
+        std::cerr << "connect() failed: " << strerror(errno) << std::endl;
+        return EXIT_FAILURE;
     }
 
     epoll_event eev;
     eev.events = EPOLLIN;
-    eev.data.fd = listenfd;
-    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listenfd, &eev) == -1) {
+    eev.data.fd = clientfd;
+    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, clientfd, &eev) == -1) {
         std::cerr << "epoll_ctl() failed: " << strerror(errno) << std::endl;
+        return EXIT_FAILURE;
     }
+
+
+    // create periodic 10 second timer
+
+    static int timerfd = -1;
+
+    if (timerfd = timerfd_create(CLOCK_BOOTTIME, TFD_NONBLOCK) == -1) {
+        std::cerr << "timefd_create() failed: " << strerror(errno) << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    eev.data.fd = timerfd;
+    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, clientfd, &eev) == -1) {
+        std::cerr << "epoll_ctl() failed: " << strerror(errno) << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    struct itimerspec its = {};
+    its.it_value.tv_sec = 10;
+    its.it_interval.tv_sec = 10;
+
+    if (timerfd_settime(timerfd, 0, &its, nullptr) == -1) {
+        std::cerr << "timefd_settime() failed: " << strerror(errno)
+            << std::endl;
+        return -1;
+    }
+
+
+    // epoll loop
 
     const int max_epoll_events = 32;
     struct epoll_event events[max_epoll_events];
@@ -54,45 +87,26 @@ int main()
 
         for (int n = 0; n < nfds; ++n) {
             if (events[n].events & EPOLLIN) {
-                if (events[n].data.fd == listenfd) {
-                    socklen_t size = sizeof(address);
-                    int client_fd = accept(listenfd,
-                        reinterpret_cast<sockaddr*>(&address), &size);
-                    if (client_fd == -1) {
-                        std::cerr << "accept failed: " << strerror(errno);
+                if (events[n].data.fd == clientfd) {
+                    int ret;
+                    ret = recv(clientfd, buf, sizeof(buf), 0);
+                    if (ret == -1) {
+                        if (errno != EAGAIN && errno != EWOULDBLOCK &&
+                                errno != EINTR) {
+                            std::cerr << "recv failed" << std::endl;
+                            return EXIT_FAILURE;
+                        }
+                    } else {
+                        std::cout << "received: %d bytes" << ret << std::endl;
+                    }
+                } else if (events[n].data.fd == timerfd) {
+                    std::cout << "timer expired" << std::endl;
+                    uint64_t s;
+                    int ret = read(timerfd, &s, sizeof(uint64_t));
+                    if (ret != sizeof(uint64_t)) {
+                        std::cerr << "timer read() failed" << std::endl;
                         return EXIT_FAILURE;
                     }
-                    eev.events = EPOLLIN | EPOLLHUP;
-                    eev.data.fd = client_fd;
-                    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, client_fd, &eev)
-                            == -1) {
-                        std::cerr << "epoll_ctl() failed: "
-                            << strerror(errno) << std::endl;
-                        return EXIT_FAILURE;
-                    }
-                    std::cerr << "added new client" << std::endl;
-                    continue;
-                }
-
-                int ret;
-                if ((ret = recv(events[n].data.fd, buf, 128, 0)) == 0) {
-                    std::cerr << "client disconnected" << std::endl;
-                    if (epoll_ctl(epollfd, EPOLL_CTL_DEL, events[n].data.fd,
-                            nullptr) == -1) {
-                        std::cerr << "epoll_ctl() failed: "
-                            << strerror(errno) << std::endl;
-                        return EXIT_FAILURE;
-                    }
-                } else {
-                    std::cout << "received: " << buf << std::endl;
-                }
-            } else if (events[n].events & EPOLLHUP) {
-                std::cerr << "client disconnected (HUP)" << std::endl;
-                if (epoll_ctl(epollfd, EPOLL_CTL_DEL, events[n].data.fd,
-                        nullptr) == -1) {
-                    std::cerr << "epoll_ctl() failed: "
-                        << strerror(errno) << std::endl;
-                    return EXIT_FAILURE;
                 }
             } else {
                 std::cerr << "unexpected event" << std::endl;
