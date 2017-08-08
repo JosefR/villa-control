@@ -20,8 +20,7 @@ int main()
         std::cerr << "epoll_create1() failed" << std::endl;
     }
 
-    //int listenfd = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, 0);
-    int clientfd = socket(AF_INET, SOCK_SEQPACKET|SOCK_NONBLOCK, IPPROTO_SCTP);
+    int clientfd = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, 0);
     if (clientfd == -1) {
         std::cerr << "socket() failed" << strerror(errno) << std::endl;
     }
@@ -107,6 +106,10 @@ int main()
                         std::cerr << "timer read() failed" << std::endl;
                         return EXIT_FAILURE;
                     }
+
+                    // send some data
+                    uint8_t data[] = { 1, 2, 3, 4, 5 };
+                    send(clientfd, data, sizeof(data), 0);
                 }
             } else {
                 std::cerr << "unexpected event" << std::endl;

@@ -6,6 +6,7 @@
 #include "connection.h"
 #include "internalconnection.h"
 #include "ttyconnection.h"
+#include "tcpconnection.h"
 #include "devicewde1.h"
 #include "serialport.h"
 #include "program.h"
@@ -41,11 +42,12 @@ int main(int argc, char** argv)
         {"name", "USB WDE1"}, {"connection", "/dev/ttyUSB0:9600"}};
 
     villa::InternalConnection internalcon(&evmgr);
-    villa::TtyConnection con1(&evmgr, "/dev/ttyUSB0",
-                              villa::SerialPort::BaudRate::Baud38400);
+//    villa::TtyConnection con1(&evmgr, "/dev/ttyUSB0",
+//                              villa::SerialPort::BaudRate::Baud38400);
 
-    auto dev1(std::make_unique<villa::DeviceWde1>(device_config));
-    con1.addDevice(std::move(dev1));
+//    auto dev1(std::make_unique<villa::DeviceWde1>(device_config));
+//    con1.addDevice(std::move(dev1));
+    villa::TcpConnection tcpconn(&evmgr, "127.0.0.1", 9991);
 
     try {
         evmgr.run();

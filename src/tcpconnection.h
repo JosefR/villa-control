@@ -1,16 +1,16 @@
 #ifndef VILLA_SCTPCONNECTION_H
 #define VILLA_SCTPCONNECTION_H
 
-#include "connection.h"
+#include "serverconnection.h"
 
 namespace villa {
 
-class SctpConnection : public Connection
+class TcpConnection : public ServerConnection
 {
 public:
-    SctpConnection(EventManager *evmgr, const char *ip, uint16_t port);
+    TcpConnection(EventManager *evmgr, const char *ip, uint16_t port);
 
-    virtual ~SctpConnection();
+    virtual ~TcpConnection();
 
     virtual void timeout();
     virtual void read();
