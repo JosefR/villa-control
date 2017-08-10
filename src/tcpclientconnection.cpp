@@ -41,6 +41,14 @@ void TcpClientConnection::read()
             return;
         throw(std::runtime_error(std::string("recv(): ") + strerror(errno)));
     }
+
+    if (ret == 0) {
+        // close the connection
+        std::cout << "close connection to client " << mFd << std::endl;
+        mEvMgr->unregisterConnection(this);
+        delete this;
+        return;
+    }
     std::cout << "received " << ret << " bytes" << std::endl;
 }
 

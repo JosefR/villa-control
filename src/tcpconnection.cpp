@@ -56,21 +56,30 @@ void TcpConnection::timeout()
 
 void TcpConnection::read()
 {
-    int ret;
-    std::array<uint8_t,256> buf;
+//    std::array<uint8_t,256> buf;
     int client_fd;
+    struct sockaddr_in addr;
+    socklen_t len;
 
-    while (1) {
-        ret = recv(mFd, &client_fd, sizeof(client_fd), 0);
-        if (ret == -1) {
-            if (errno == EINTR)
-                continue;
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-                return;
-            throw(std::runtime_error(strerror(errno)));
-        }
-        std::cout << "new client:  " << client_fd << std::endl;
+    client_fd = accept(mFd, reinterpret_cast<struct sockaddr*>(&addr), &len);
+    if (client_fd == -1) {
+        std::cerr << "accept failed: " << strerror(errno) << std::endl;
+        return;
     }
+
+    std::cout << "new client:  " << client_fd << std::endl;
+
+//    while (1) {
+//        ret = recv(mFd, &client_fd, sizeof(client_fd), 0);
+//        if (ret == -1) {
+//            if (errno == EINTR)
+//                continue;
+//            if (errno == EAGAIN || errno == EWOULDBLOCK)
+//                return;
+//            throw(std::runtime_error(strerror(errno)));
+//        }
+
+//    }
 
     auto client = std::make_unique<TcpClientConnection>(mEvMgr, client_fd);
 

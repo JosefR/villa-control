@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 
 //    auto dev1(std::make_unique<villa::DeviceWde1>(device_config));
 //    con1.addDevice(std::move(dev1));
-    villa::TcpConnection tcpconn(&evmgr, "127.0.0.1", 9991);
+    villa::TcpConnection tcpconn(&evmgr, "0.0.0.0", 9991);
 
     try {
         evmgr.run();
